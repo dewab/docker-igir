@@ -14,13 +14,25 @@ PLATFORM_FLAGS := $(foreach platform,$(PLATFORMS),--platform $(platform))
 
 vendor:
 	mkdir -p "$(VENDOR_DIR)"
+	printf '%s\n' \
+		'{' \
+		'  "private": true,' \
+		'  "dependencies": {' \
+		'    "igir": "$(IGIR_VERSION)"' \
+		'  },' \
+		'  "overrides": {' \
+		'    "tar": "7.5.11"' \
+		'  }' \
+		'}' \
+		> "$(VENDOR_DIR)/package.json"
+	rm -f "$(VENDOR_DIR)/package-lock.json"
 	npm install \
 		--prefix "$(VENDOR_DIR)" \
 		--omit=dev \
 		--cpu=x64 \
 		--os=linux \
 		--libc=glibc \
-		"igir@$(IGIR_VERSION)"
+		.
 
 build: vendor
 	container build \

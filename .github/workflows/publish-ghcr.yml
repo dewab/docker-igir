@@ -55,13 +55,25 @@ jobs:
       - name: Vendor Igir Dependencies
         run: |
           mkdir -p .vendor/igir-linux-x64
+          cat > .vendor/igir-linux-x64/package.json <<'EOF'
+          {
+            "private": true,
+            "dependencies": {
+              "igir": "${{ steps.version.outputs.igir_version }}"
+            },
+            "overrides": {
+              "tar": "7.5.11"
+            }
+          }
+          EOF
+          rm -f .vendor/igir-linux-x64/package-lock.json
           npm install \
             --prefix .vendor/igir-linux-x64 \
             --omit=dev \
             --cpu=x64 \
             --os=linux \
             --libc=glibc \
-            "igir@${{ steps.version.outputs.igir_version }}"
+            .
 
       - name: Set Up Buildx
         uses: docker/setup-buildx-action@v3
