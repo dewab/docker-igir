@@ -113,24 +113,26 @@ jobs:
           test "$status" -eq 0
           test "$version" = "${{ steps.version.outputs.igir_version }}"
 
-      - name: Trivy Filesystem Scan
-        uses: aquasecurity/trivy-action@0.28.0
+      - name: Set Up Trivy
+        uses: aquasecurity/setup-trivy@v0.2.2
         with:
-          scan-type: fs
-          scan-ref: .
-          severity: HIGH,CRITICAL
-          ignore-unfixed: true
-          format: table
-          exit-code: 1
+          version: latest
+
+      - name: Trivy Filesystem Scan
+        run: |
+          trivy fs \
+            --severity HIGH,CRITICAL \
+            --ignore-unfixed \
+            --exit-code 1 \
+            .
 
       - name: Trivy Image Scan
-        uses: aquasecurity/trivy-action@0.28.0
-        with:
-          image-ref: local/igir-ci:${{ steps.version.outputs.igir_version }}
-          severity: HIGH,CRITICAL
-          ignore-unfixed: true
-          format: table
-          exit-code: 1
+        run: |
+          trivy image \
+            --severity HIGH,CRITICAL \
+            --ignore-unfixed \
+            --exit-code 1 \
+            local/igir-ci:${{ steps.version.outputs.igir_version }}
 
       - name: Push Image
         if: github.event_name != 'pull_request'
