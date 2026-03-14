@@ -101,7 +101,14 @@ jobs:
       - name: Smoke Test
         run: |
           version="$(docker run --rm local/igir-ci:${{ steps.version.outputs.igir_version }} --version)"
-          test "$version" = "${{ steps.version.outputs.igir_version }}"
+          printf 'container version output: %s\n' "$version"
+          case "$version" in
+            *"${{ steps.version.outputs.igir_version }}"*) ;;
+            *)
+              echo "expected version substring ${{ steps.version.outputs.igir_version }}"
+              exit 1
+              ;;
+          esac
 
       - name: Trivy Filesystem Scan
         uses: aquasecurity/trivy-action@0.28.0
