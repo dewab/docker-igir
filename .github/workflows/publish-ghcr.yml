@@ -101,18 +101,17 @@ jobs:
       - name: Smoke Test
         run: |
           set +e
-          version="$(docker run --rm local/igir-ci:${{ steps.version.outputs.igir_version }} --version 2>&1)"
+          version="$(
+            docker run --rm \
+              --entrypoint node \
+              local/igir-ci:${{ steps.version.outputs.igir_version }} \
+              -p "require('/usr/local/lib/node_modules/igir/package.json').version" 2>&1
+          )"
           status=$?
           set -e
           printf 'container version output: %s\n' "$version"
           test "$status" -eq 0
-          case "$version" in
-            *"${{ steps.version.outputs.igir_version }}"*) ;;
-            *)
-              echo "expected version substring ${{ steps.version.outputs.igir_version }}"
-              exit 1
-              ;;
-          esac
+          test "$version" = "${{ steps.version.outputs.igir_version }}"
 
       - name: Trivy Filesystem Scan
         uses: aquasecurity/trivy-action@0.28.0
