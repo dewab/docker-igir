@@ -100,8 +100,12 @@ jobs:
 
       - name: Smoke Test
         run: |
-          version="$(docker run --rm local/igir-ci:${{ steps.version.outputs.igir_version }} --version)"
+          set +e
+          version="$(docker run --rm local/igir-ci:${{ steps.version.outputs.igir_version }} --version 2>&1)"
+          status=$?
+          set -e
           printf 'container version output: %s\n' "$version"
+          test "$status" -eq 0
           case "$version" in
             *"${{ steps.version.outputs.igir_version }}"*) ;;
             *)
