@@ -31,8 +31,7 @@ vendor:
 		--omit=dev \
 		--cpu=x64 \
 		--os=linux \
-		--libc=glibc \
-		.
+		--libc=glibc
 
 build: vendor
 	container build \
