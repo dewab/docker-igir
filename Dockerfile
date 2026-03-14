@@ -22,12 +22,10 @@ ENV NODE_ENV=production \
     IGIR_OUTPUT=/data/out \
     IGIR_DATS=/data/dats
 
-COPY .vendor/igir-linux-x64/node_modules/igir /usr/local/lib/node_modules/igir
-COPY .vendor/igir-linux-x64/node_modules /opt/igir-node_modules
+COPY .vendor/igir-linux-x64/node_modules /usr/local/lib/node_modules
 
-RUN rm -rf /opt/igir-node_modules/npm /opt/igir-node_modules/corepack \
+RUN rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack \
     && rm -f /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack \
-    && ln -s /opt/igir-node_modules /usr/local/lib/node_modules/igir/node_modules \
     && mkdir -p /data/in /data/out /data/dats \
     && chown -R node:node /data /home/node
 
